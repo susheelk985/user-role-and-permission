@@ -31,4 +31,8 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->group(function () {
     Route::get('admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('admin/users', [UserController::class, 'store'])->name('admin.users.store');
+    Route::get('admin/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::get('admin/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('admin/users/{id}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('admin/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 });

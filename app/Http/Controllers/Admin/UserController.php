@@ -11,6 +11,13 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    // Show list of users
+    public function index()
+    {
+        $users = User::all();
+        return view('admin.users.index', compact('users'));
+    }
+
     // Show the form for creating a new user
     public function create()
     {
@@ -47,4 +54,46 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.create')->with('success', 'User created successfully!');
     }
+    // Return edit form for a user
+    public function edit($id)
+    {
+        $user = User::findOrFail($id);
+        return response()->json($user); // Return user data in JSON for AJAX
+    }
+     // Update user
+     // app/Http/Controllers/UserController.php
+public function update(Request $request, $id)
+{
+    // Fetch the user record
+    $user = User::findOrFail($id);
+
+    // Validate the request
+    $validator = \Validator::make($request->all(), [
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+    ]);
+
+    // Check if validation fails
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => 'error',
+            'errors' => $validator->errors(),
+        ], 422);  // 422 status for validation errors
+    }
+
+    // Update user details
+    $user->name = $request->name;
+    $user->email = $request->email;
+    $user->save();
+
+    return response()->json(['status' => 'success', 'success' => 'User updated successfully']);
+}
+
+
+     // Delete user
+     public function destroy($id)
+     {
+         User::findOrFail($id)->delete();
+         return response()->json(['success' => 'User deleted successfully']);
+     }
 }
